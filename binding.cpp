@@ -7,12 +7,14 @@ public:
     LlamaContext(const Napi::CallbackInfo& info);
     ~LlamaContext();
 
+    // Getter and setter for _llamaCtx
+    struct llama_context* GetLlamaCtx() const { return _llamaCtx; }
+    void SetLlamaCtx(struct llama_context* ctx) { _llamaCtx = ctx; }
+    void Free(const Napi::CallbackInfo& info);
+
 private:
     static Napi::FunctionReference constructor;
     struct llama_context* _llamaCtx;
-
-    // Binding methods
-    void Free(const Napi::CallbackInfo& info);
 };
 
 Napi::FunctionReference LlamaContext::constructor;
@@ -54,9 +56,27 @@ void LlamaContext::Free(const Napi::CallbackInfo& info) {
     }
 }
 
+static Napi::Value PrintTimingsWrapper(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::Object obj = info[0].As<Napi::Object>();
+    LlamaContext* context = Napi::ObjectWrap<LlamaContext>::Unwrap(obj);
+    llama_print_timings(context->GetLlamaCtx());
+    return env.Null();
+}
+
+static Napi::Value FreeWrapper(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::Object obj = info[0].As<Napi::Object>();
+    LlamaContext* context = Napi::ObjectWrap<LlamaContext>::Unwrap(obj);
+    context->Free(info);
+    return env.Null();
+}
+
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
     LlamaContext::Init(env, exports);
     exports.Set(Napi::String::New(env, "initBackend"), Napi::Function::New(env, InitBackendWrapper));
+    exports.Set(Napi::String::New(env, "printTimings"), Napi::Function::New(env, PrintTimingsWrapper));
+    exports.Set(Napi::String::New(env, "free"), Napi::Function::New(env, FreeWrapper));
     return exports;
 }
 
