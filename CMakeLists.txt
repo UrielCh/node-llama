@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.10)
+project(node-llama)
+
+set(CMAKE_CXX_STANDARD 14)
+
+add_library(node-llama SHARED
+    llama/llama.cpp)
+
+set_target_properties(node-llama PROPERTIES PREFIX "" SUFFIX ".node")
+
+target_include_directories(node-llama PRIVATE
+    ${CMAKE_JS_INC})
+
+target_link_libraries(node-llama PRIVATE
+    ${CMAKE_JS_LIB})
+
+add_definitions(-DNAPI_VERSION=3)
