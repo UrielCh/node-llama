@@ -15,6 +15,9 @@ private:
     void Free(const Napi::CallbackInfo& info);
 };
 
+// Add this line to define 'constructor'.
+Napi::FunctionReference LlamaContext::constructor;
+
 Napi::Object LlamaContext::Init(Napi::Env env, Napi::Object exports) {
     Napi::HandleScope scope(env);
 
