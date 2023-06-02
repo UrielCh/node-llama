@@ -15,8 +15,13 @@ private:
     void Free(const Napi::CallbackInfo& info);
 };
 
-// Add this line to define 'constructor'.
 Napi::FunctionReference LlamaContext::constructor;
+
+static Napi::Value InitBackendWrapper(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    llama_init_backend();
+    return env.Null();
+}
 
 Napi::Object LlamaContext::Init(Napi::Env env, Napi::Object exports) {
     Napi::HandleScope scope(env);
@@ -50,8 +55,8 @@ void LlamaContext::Free(const Napi::CallbackInfo& info) {
 }
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
-    llama_init_backend();
     LlamaContext::Init(env, exports);
+    exports.Set(Napi::String::New(env, "initBackend"), Napi::Function::New(env, InitBackendWrapper));
     return exports;
 }
 
