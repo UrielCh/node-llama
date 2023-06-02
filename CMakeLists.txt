@@ -13,7 +13,8 @@ target_include_directories(node-llama PRIVATE
     ${CMAKE_SOURCE_DIR}/node_modules/node-addon-api)
 
 target_link_libraries(node-llama PRIVATE
-    ${CMAKE_JS_LIB})
+    ${CMAKE_JS_LIB}
+    llama)
 
 add_definitions(-DNAPI_VERSION=8)
 
