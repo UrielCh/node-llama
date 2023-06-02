@@ -10,3 +10,7 @@ const initBackend = llama.initBackend;
 console.log(Object.keys(llama));
 console.log(new LlamaContext());
 console.log(initBackend());
+
+console.log(llama.mmapSupported());
+console.log(llama.mlockSupported());
+

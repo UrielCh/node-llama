@@ -112,6 +112,18 @@ static Napi::Value FreeWrapper(const Napi::CallbackInfo& info) {
     return env.Null();
 }
 
+Napi::Boolean MMapSupportedWrapper(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    bool result = llama_mmap_supported();
+    return Napi::Boolean::New(env, result);
+}
+
+Napi::Boolean MLockSupportedWrapper(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    bool result = llama_mlock_supported();
+    return Napi::Boolean::New(env, result);
+}
+
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
     LlamaContext::Init(env, exports);
     exports.Set(Napi::String::New(env, "initBackend"), Napi::Function::New(env, InitBackendWrapper));
@@ -119,6 +131,9 @@ Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
     exports.Set("modelQuantize", Napi::Function::New(env, ModelQuantizeWrapper));
     exports.Set("applyLoRaFromFile", Napi::Function::New(env, ApplyLoRaFromFileWrapper));
     exports.Set(Napi::String::New(env, "free"), Napi::Function::New(env, FreeWrapper));
+    exports.Set(Napi::String::New(env, "mmapSupported"), Napi::Function::New(env, MMapSupportedWrapper));
+    exports.Set(Napi::String::New(env, "mlockSupported"), Napi::Function::New(env, MLockSupportedWrapper));
+
     return exports;
 }
 
