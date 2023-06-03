@@ -39,4 +39,6 @@ export interface LlamaContextParamsConstructor {
 export interface Llamalib {
   LlamaContext: LlamaContextConstructor;
   LlamaContextParams: LlamaContextParamsConstructor;
+
+  initFromFile(filename: string, params: LlamaContextParams): LlamaContext | null; 
 }

@@ -2,7 +2,7 @@
 #define LLAMA_CONTEXT_PARAMS_HH
 
 #include <napi.h>
-#include "LlamaContextParams.hh"
-#include "LlamaContext.hh"
+
+Napi::Value initFromFile(const Napi::CallbackInfo& info);
 
 #endif

@@ -1,13 +1,15 @@
 #include <napi.h>
 #include "../llama/llama.h"
-// #include "LlamaContext.hh"
+#include "LlamaContext.hh"
 #include "LlamaContextParams.hh"
+#include "methods.hh"
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
     // init lama on load
     llama_init_backend();
     // LlamaContext::Init(env, exports);
     LlamaContextParams::Init(env, exports);
+    exports.Set(Napi::String::New(env, "initFromFile"), Napi::Function::New(env, initFromFile));
     // exports.Set(Napi::String::New(env, "initBackend"), Napi::Function::New(env, InitBackendWrapper));
     // exports.Set(Napi::String::New(env, "printTimings"), Napi::Function::New(env, PrintTimingsWrapper));
     // exports.Set("modelQuantize", Napi::Function::New(env, ModelQuantizeWrapper));

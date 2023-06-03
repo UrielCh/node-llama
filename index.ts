@@ -32,6 +32,9 @@ for (const p of paramsFileds) {
   console.log(`${p}: ${params[p]}`);
 }
 
+const llm = llama.initFromFile('models/7B/ggml-model-f16.bin', params);
+
+
 // const context = new LlamaContext();
 // console.log(context);
 // console.log('getPrototypeOf:', Object.getPrototypeOf(context));

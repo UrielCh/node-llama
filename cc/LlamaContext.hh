@@ -13,6 +13,8 @@ public:
     LlamaContext(const Napi::CallbackInfo& info, struct llama_context* ctx); // New constructor
     ~LlamaContext();
 
+    struct llama_context* _llamaCtx;
+
     // Getter and setter for _llamaCtx
     struct llama_context* GetLlamaCtx() const { return _llamaCtx; }
     void SetLlamaCtx(struct llama_context* ctx) { _llamaCtx = ctx; }
@@ -35,10 +37,7 @@ public:
     Napi::Value TokenBOS(const Napi::CallbackInfo& info);
     Napi::Value TokenEOS(const Napi::CallbackInfo& info);
     Napi::Value TokenNL(const Napi::CallbackInfo& info);
-
-private:
     static Napi::FunctionReference constructor;
-    struct llama_context* _llamaCtx;
 };
 
 #endif
