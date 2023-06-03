@@ -3,5 +3,6 @@
 
 #include <napi.h>
 #include "LlamaContextParams.hh"
+#include "LlamaContext.hh"
 
 #endif

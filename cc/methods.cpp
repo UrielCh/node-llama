@@ -17,15 +17,18 @@ static Napi::Value initFromFile(const Napi::CallbackInfo& info) {
     Napi::String path_model = info[0].As<Napi::String>();
     Napi::Object contex_obj = info[1].As<Napi::Object>();
     LlamaContextParams* context = Napi::ObjectWrap<LlamaContextParams>::Unwrap(contex_obj);
-    // struct llama_context* result = llama_init_from_file(path_model.Utf8Value().c_str(), *context->GetInternalInstance());
+    struct llama_context* result = llama_init_from_file(path_model.Utf8Value().c_str(), context->_llama_context_params);
 
     // Encapsulate the result in a LlamaContext
-    // LlamaContext* llamaContext = new LlamaContext(env, result);
+    LlamaContext* llamaContext = new LlamaContext(info, result);
+
+    // TODO wrap llamaContext as an Napi::Object
     
-    // Create a new instance of our LlamaContext JavaScript class
-    //Napi::Object instance = LlamaContext::constructor.New({ Napi::External<struct llama_context>::New(env, llamaContext) });
-    
-    // Return the new LlamaContext object
-    // return instance;
+    // return LlamaContext::ObjectWrap(llamaContext);
+    // Create a new instance of JavaScript LlamaContext object
+    // Napi::Object obj = LlamaContext::constructor.New({ Napi::External<LlamaContext>::New(env, llamaContext) });
+
+    // Return the new instance
+    // return obj;
 }
 

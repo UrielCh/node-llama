@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 add_library(node-llama SHARED
     cc/LlamaContextParams.cpp
     cc/methods.cpp
+    cc/LlamaContext.cpp
     cc/binding.cpp)
 
 set_target_properties(node-llama PROPERTIES PREFIX "" SUFFIX ".node")

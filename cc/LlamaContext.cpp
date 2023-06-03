@@ -34,14 +34,12 @@ Napi::Object LlamaContext::Init(Napi::Env env, Napi::Object exports) {
     return exports;
 }
 
-// LlamaContext::LlamaContext(const Napi::Env env, struct llama_context* ctx) : Napi::ObjectWrap<LlamaContext>(), _llamaCtx(ctx) {
-// }
+LlamaContext::LlamaContext(const Napi::CallbackInfo& info) : Napi::ObjectWrap<LlamaContext>(info) {
+    // Extract the llama_context from info here, and assign it to _llamaCtx
+    // _llamaCtx = ...;
+}
 
-// LlamaContext::LlamaContext(const Napi::CallbackInfo& info) : Napi::ObjectWrap<LlamaContext>(info)  {
-//     _llamaCtx = nullptr;
-// }
-
-LlamaContext::LlamaContext(const Napi::Env env, struct llama_context* ctx) : Napi::ObjectWrap<LlamaContext>() {
+LlamaContext::LlamaContext(const Napi::CallbackInfo& info, struct llama_context* ctx) : Napi::ObjectWrap<LlamaContext>(info) {
     _llamaCtx = ctx;
 }
 
@@ -83,6 +81,9 @@ void LlamaContext::Free(const Napi::CallbackInfo& info) {
         _llamaCtx = nullptr;
     }
 }
+
+
+
 
 Napi::Value LlamaContext::CopyStateData(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
@@ -244,6 +245,8 @@ Napi::Value LlamaContext::TokenNL(const Napi::CallbackInfo& info) {
     llama_token nl = llama_token_nl();
     return Napi::Number::New(env, nl);
 }
+
+
 
 
 // Napi::Value LlamaContext::GetLogits(const Napi::CallbackInfo& info) {

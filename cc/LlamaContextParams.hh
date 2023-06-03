@@ -9,7 +9,6 @@ public:
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
     LlamaContextParams(const Napi::CallbackInfo& info);
     llama_context_params _llama_context_params;
-    // llama_context_params* GetInternalInstance();
 
 private:
     static Napi::FunctionReference constructor;

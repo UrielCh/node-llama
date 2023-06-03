@@ -1,14 +1,16 @@
+
+
 #ifndef LLAMACONTEXT_HH
 #define LLAMACONTEXT_HH
 
 #include <napi.h>
-#include "llama/llama.h"
+#include "../llama/llama.h"
 
 class LlamaContext : public Napi::ObjectWrap<LlamaContext> {
 public:
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
-    LlamaContext();
-    LlamaContext(const Napi::Env env, struct llama_context* ctx); // New constructor
+    LlamaContext(const Napi::CallbackInfo& info);
+    LlamaContext(const Napi::CallbackInfo& info, struct llama_context* ctx); // New constructor
     ~LlamaContext();
 
     // Getter and setter for _llamaCtx
@@ -40,3 +42,4 @@ private:
 };
 
 #endif
+
