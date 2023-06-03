@@ -17,7 +17,7 @@ static Napi::Value initFromFile(const Napi::CallbackInfo& info) {
     Napi::String path_model = info[0].As<Napi::String>();
     Napi::Object contex_obj = info[1].As<Napi::Object>();
     LlamaContextParams* context = Napi::ObjectWrap<LlamaContextParams>::Unwrap(contex_obj);
-    struct llama_context* result = llama_init_from_file(path_model.Utf8Value().c_str(), *context->GetInternalInstance());
+    // struct llama_context* result = llama_init_from_file(path_model.Utf8Value().c_str(), *context->GetInternalInstance());
 
     // Encapsulate the result in a LlamaContext
     // LlamaContext* llamaContext = new LlamaContext(env, result);

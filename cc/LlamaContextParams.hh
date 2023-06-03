@@ -8,7 +8,8 @@ class LlamaContextParams : public Napi::ObjectWrap<LlamaContextParams> {
 public:
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
     LlamaContextParams(const Napi::CallbackInfo& info);
-    llama_context_params* GetInternalInstance();
+    llama_context_params _llama_context_params;
+    // llama_context_params* GetInternalInstance();
 
 private:
     static Napi::FunctionReference constructor;
@@ -38,8 +39,6 @@ private:
 
     Napi::Value GetEmbedding(const Napi::CallbackInfo& info);
     void SetEmbedding(const Napi::CallbackInfo& info, const Napi::Value& value);
-
-    llama_context_params* _llama_context_params;
 };
 
 #endif

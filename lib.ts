@@ -18,10 +18,10 @@ export interface LlamaContextConstructor {
 
 export interface LlamaContextParams {
   n_ctx: number;
-  n_vocab: number;
-  n_embd: number;
-  n_head: number;
-  n_layer: number;
+  // n_vocab: number;
+  // n_embd: number;
+  // n_head: number;
+  // n_layer: number;
   n_gpu_layers: number;
   seed: number;
   f16_kv: boolean;
