@@ -17,6 +17,11 @@ public:
     void SetRngSeed(const Napi::CallbackInfo& info);
     Napi::Value GetKvCacheTokenCount(const Napi::CallbackInfo& info);
     Napi::Value GetStateSize(const Napi::CallbackInfo& info);
+    Napi::Value CopyStateData(const Napi::CallbackInfo& info);
+    Napi::Value SetStateData(const Napi::CallbackInfo& info);
+    Napi::Value LoadSessionFile(const Napi::CallbackInfo& info);
+    Napi::Value SaveSessionFile(const Napi::CallbackInfo& info);
+    Napi::Value Eval(const Napi::CallbackInfo& info);
 
 private:
     static Napi::FunctionReference constructor;
