@@ -7,7 +7,8 @@
 class LlamaContext : public Napi::ObjectWrap<LlamaContext> {
 public:
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
-    LlamaContext(const Napi::CallbackInfo& info);
+    LlamaContext();
+    LlamaContext(const Napi::Env env, struct llama_context* ctx); // New constructor
     ~LlamaContext();
 
     // Getter and setter for _llamaCtx
@@ -29,6 +30,9 @@ public:
     // Napi::Value GetLogits(const Napi::CallbackInfo& info);
     // Napi::Value GetEmbeddings(const Napi::CallbackInfo& info);
     Napi::Value TokenToStr(const Napi::CallbackInfo& info);
+    Napi::Value TokenBOS(const Napi::CallbackInfo& info);
+    Napi::Value TokenEOS(const Napi::CallbackInfo& info);
+    Napi::Value TokenNL(const Napi::CallbackInfo& info);
 
 private:
     static Napi::FunctionReference constructor;

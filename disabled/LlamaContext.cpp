@@ -21,7 +21,10 @@ Napi::Object LlamaContext::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod("getStateSize", &LlamaContext::GetStateSize),
         // InstanceMethod("getLogits", &LlamaContext::GetLogits),
         // InstanceMethod("getEmbeddings", &LlamaContext::GetEmbeddings),
-        InstanceMethod("tokenToStr", &LlamaContext::TokenToStr)
+        InstanceMethod("tokenToStr", &LlamaContext::TokenToStr),
+        InstanceMethod("tokenBOS", &LlamaContext::TokenBOS),
+        InstanceMethod("tokenEOS", &LlamaContext::TokenEOS),
+        InstanceMethod("tokenNL", &LlamaContext::TokenNL),
     });
 
     constructor = Napi::Persistent(func);
@@ -31,8 +34,15 @@ Napi::Object LlamaContext::Init(Napi::Env env, Napi::Object exports) {
     return exports;
 }
 
-LlamaContext::LlamaContext(const Napi::CallbackInfo& info) : Napi::ObjectWrap<LlamaContext>(info)  {
-    _llamaCtx = nullptr;
+// LlamaContext::LlamaContext(const Napi::Env env, struct llama_context* ctx) : Napi::ObjectWrap<LlamaContext>(), _llamaCtx(ctx) {
+// }
+
+// LlamaContext::LlamaContext(const Napi::CallbackInfo& info) : Napi::ObjectWrap<LlamaContext>(info)  {
+//     _llamaCtx = nullptr;
+// }
+
+LlamaContext::LlamaContext(const Napi::Env env, struct llama_context* ctx) : Napi::ObjectWrap<LlamaContext>() {
+    _llamaCtx = ctx;
 }
 
 void LlamaContext::SetRngSeed(const Napi::CallbackInfo& info) {
@@ -205,6 +215,37 @@ Napi::Value LlamaContext::NEmbd(const Napi::CallbackInfo& info) {
     return Napi::Number::New(env, result);
 }
 
+Napi::Value LlamaContext::TokenToStr(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+
+    if (info.Length() < 1 || !info[0].IsNumber()) {
+        Napi::TypeError::New(env, "Expected arguments: number").ThrowAsJavaScriptException();
+    }
+
+    llama_token token = info[0].As<Napi::Number>().Uint32Value();
+    const char* str = llama_token_to_str(_llamaCtx, token);
+    return Napi::String::New(env, str);
+}
+
+Napi::Value LlamaContext::TokenBOS(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    llama_token bos = llama_token_bos();
+    return Napi::Number::New(env, bos);
+}
+
+Napi::Value LlamaContext::TokenEOS(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    llama_token eos = llama_token_eos();
+    return Napi::Number::New(env, eos);
+}
+
+Napi::Value LlamaContext::TokenNL(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    llama_token nl = llama_token_nl();
+    return Napi::Number::New(env, nl);
+}
+
+
 // Napi::Value LlamaContext::GetLogits(const Napi::CallbackInfo& info) {
 //     Napi::Env env = info.Env();
 //     float* logits = llama_get_logits(_llamaCtx);
@@ -241,14 +282,3 @@ Napi::Value LlamaContext::NEmbd(const Napi::CallbackInfo& info) {
 //     return embeddingsArray;
 // }
 
-Napi::Value LlamaContext::TokenToStr(const Napi::CallbackInfo& info) {
-    Napi::Env env = info.Env();
-
-    if (info.Length() < 1 || !info[0].IsNumber()) {
-        Napi::TypeError::New(env, "Expected arguments: number").ThrowAsJavaScriptException();
-    }
-
-    llama_token token = info[0].As<Napi::Number>().Uint32Value();
-    const char* str = llama_token_to_str(_llamaCtx, token);
-    return Napi::String::New(env, str);
-}

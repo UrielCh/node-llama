@@ -2,12 +2,13 @@
 #include "llama/llama.h"
 
 #include "LlamaContext.hh"
+#include "LlamaContextParams.hh"
 
-static Napi::Value InitBackendWrapper(const Napi::CallbackInfo& info) {
-    Napi::Env env = info.Env();
-    llama_init_backend();
-    return env.Null();
-}
+// static Napi::Value InitBackendWrapper(const Napi::CallbackInfo& info) {
+//     Napi::Env env = info.Env();
+//     llama_init_backend();
+//     return env.Null();
+// }
 
 
 Napi::Number ModelQuantizeWrapper(const Napi::CallbackInfo& info) {
@@ -65,6 +66,36 @@ static Napi::Value FreeWrapper(const Napi::CallbackInfo& info) {
     return env.Null();
 }
 
+
+static Napi::Value initFromFile(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    if (info.Length() < 2) {
+        Napi::TypeError::New(env, "Expected two arguments").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    if (!info[0].IsString()) {
+        Napi::TypeError::New(env, "Expected first argument to be a string").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    if (!info[1].IsObject()) {
+        Napi::TypeError::New(env, "Expected second argument to be an object").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    Napi::String path_model = info[0].As<Napi::String>();
+    Napi::Object contex_obj = info[1].As<Napi::Object>();
+    LlamaContextParams* context = Napi::ObjectWrap<LlamaContextParams>::Unwrap(contex_obj);
+    struct llama_context* result = llama_init_from_file(path_model.Utf8Value().c_str(), *context->GetInternalInstance());
+
+    // Encapsulate the result in a LlamaContext
+    LlamaContext* llamaContext = new LlamaContext(env, result);
+    
+    // Create a new instance of our LlamaContext JavaScript class
+    Napi::Object instance = LlamaContext::constructor.New({ Napi::External<struct llama_context>::New(env, llamaContext) });
+    
+    // Return the new LlamaContext object
+    return instance;
+}
+
 Napi::Boolean MMapSupportedWrapper(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     bool result = llama_mmap_supported();
@@ -78,8 +109,11 @@ Napi::Boolean MLockSupportedWrapper(const Napi::CallbackInfo& info) {
 }
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
+    // init lama on load
+    llama_init_backend();
     LlamaContext::Init(env, exports);
-    exports.Set(Napi::String::New(env, "initBackend"), Napi::Function::New(env, InitBackendWrapper));
+    LlamaContextParams::Init(env, exports);
+    // exports.Set(Napi::String::New(env, "initBackend"), Napi::Function::New(env, InitBackendWrapper));
     exports.Set(Napi::String::New(env, "printTimings"), Napi::Function::New(env, PrintTimingsWrapper));
     exports.Set("modelQuantize", Napi::Function::New(env, ModelQuantizeWrapper));
     exports.Set("applyLoRaFromFile", Napi::Function::New(env, ApplyLoRaFromFileWrapper));

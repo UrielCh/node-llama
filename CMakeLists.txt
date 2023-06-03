@@ -4,8 +4,9 @@ project(node-llama)
 set(CMAKE_CXX_STANDARD 14)
 
 add_library(node-llama SHARED
-    LlamaContext.cpp
-    binding.cpp)
+    cc/LlamaContextParams.cpp
+    cc/methods.cpp
+    cc/binding.cpp)
 
 set_target_properties(node-llama PROPERTIES PREFIX "" SUFFIX ".node")
 
