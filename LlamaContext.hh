@@ -22,6 +22,10 @@ public:
     Napi::Value LoadSessionFile(const Napi::CallbackInfo& info);
     Napi::Value SaveSessionFile(const Napi::CallbackInfo& info);
     Napi::Value Eval(const Napi::CallbackInfo& info);
+    Napi::Value Tokenize(const Napi::CallbackInfo& info);
+    Napi::Value NVocab(const Napi::CallbackInfo& info);
+    Napi::Value NCtx(const Napi::CallbackInfo& info);
+    Napi::Value NEmbd(const Napi::CallbackInfo& info);
 
 private:
     static Napi::FunctionReference constructor;

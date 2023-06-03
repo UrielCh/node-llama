@@ -13,9 +13,15 @@ Napi::Object LlamaContext::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod("saveSessionFile", &LlamaContext::SaveSessionFile),
         InstanceMethod("eval", &LlamaContext::Eval),
 
+        InstanceMethod("tokenize", &LlamaContext::Tokenize),
+        InstanceMethod("nVocab", &LlamaContext::NVocab),
+        InstanceMethod("nCtx", &LlamaContext::NCtx),
+        InstanceMethod("nEmbd", &LlamaContext::NEmbd),
+
         InstanceMethod("setRngSeed", &LlamaContext::SetRngSeed),
         InstanceMethod("getKvCacheTokenCount", &LlamaContext::GetKvCacheTokenCount),
         InstanceMethod("getStateSize", &LlamaContext::GetStateSize)
+
     });
 
     constructor = Napi::Persistent(func);
@@ -161,5 +167,40 @@ Napi::Value LlamaContext::Eval(const Napi::CallbackInfo& info) {
     int result = llama_eval(_llamaCtx, tokens.Data(), n_tokens, n_past, n_threads);
 
     // Return the result as a Number
+    return Napi::Number::New(env, result);
+}
+
+Napi::Value LlamaContext::Tokenize(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+
+    if (info.Length() < 3 || !info[0].IsString() || !info[1].IsBuffer() || !info[2].IsNumber()) {
+        Napi::TypeError::New(env, "Expected arguments: string, Buffer, number").ThrowAsJavaScriptException();
+    }
+
+    std::string text = info[0].As<Napi::String>().Utf8Value();
+    Napi::Buffer<llama_token> tokens = info[1].As<Napi::Buffer<llama_token>>();
+    int n_max_tokens = info[2].As<Napi::Number>().Int32Value();
+    bool add_bos = info[3].As<Napi::Boolean>().Value();
+
+    int result = llama_tokenize(_llamaCtx, text.c_str(), tokens.Data(), n_max_tokens, add_bos);
+
+    return Napi::Number::New(env, result);
+}
+
+Napi::Value LlamaContext::NVocab(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    int result = llama_n_vocab(_llamaCtx);
+    return Napi::Number::New(env, result);
+}
+
+Napi::Value LlamaContext::NCtx(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    int result = llama_n_ctx(_llamaCtx);
+    return Napi::Number::New(env, result);
+}
+
+Napi::Value LlamaContext::NEmbd(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    int result = llama_n_embd(_llamaCtx);
     return Napi::Number::New(env, result);
 }
