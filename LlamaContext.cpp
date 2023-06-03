@@ -12,16 +12,16 @@ Napi::Object LlamaContext::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod("loadSessionFile", &LlamaContext::LoadSessionFile),
         InstanceMethod("saveSessionFile", &LlamaContext::SaveSessionFile),
         InstanceMethod("eval", &LlamaContext::Eval),
-
         InstanceMethod("tokenize", &LlamaContext::Tokenize),
         InstanceMethod("nVocab", &LlamaContext::NVocab),
         InstanceMethod("nCtx", &LlamaContext::NCtx),
         InstanceMethod("nEmbd", &LlamaContext::NEmbd),
-
         InstanceMethod("setRngSeed", &LlamaContext::SetRngSeed),
         InstanceMethod("getKvCacheTokenCount", &LlamaContext::GetKvCacheTokenCount),
-        InstanceMethod("getStateSize", &LlamaContext::GetStateSize)
-
+        InstanceMethod("getStateSize", &LlamaContext::GetStateSize),
+        // InstanceMethod("getLogits", &LlamaContext::GetLogits),
+        // InstanceMethod("getEmbeddings", &LlamaContext::GetEmbeddings),
+        InstanceMethod("tokenToStr", &LlamaContext::TokenToStr)
     });
 
     constructor = Napi::Persistent(func);
@@ -203,4 +203,52 @@ Napi::Value LlamaContext::NEmbd(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     int result = llama_n_embd(_llamaCtx);
     return Napi::Number::New(env, result);
+}
+
+// Napi::Value LlamaContext::GetLogits(const Napi::CallbackInfo& info) {
+//     Napi::Env env = info.Env();
+//     float* logits = llama_get_logits(_llamaCtx);
+// 
+//     // Assuming `llama_get_logits` returns a pointer to an array of floats, and that you know its length.
+//     // You'll need to provide the length of the array or have some way of determining it.
+//     // For the sake of this example, let's assume the length is known and is `logits_length`.
+// 
+//     int logits_length = /* length of the logits array */;
+//     Napi::Array logitsArray = Napi::Array::New(env, logits_length);
+// 
+//     for (int i = 0; i < logits_length; i++) {
+//         logitsArray[i] = Napi::Number::New(env, logits[i]);
+//     }
+// 
+//     return logitsArray;
+// }
+
+// Napi::Value LlamaContext::GetEmbeddings(const Napi::CallbackInfo& info) {
+//     Napi::Env env = info.Env();
+//     float* embeddings = llama_get_embeddings(_llamaCtx);
+// 
+//     // Assuming `llama_get_embeddings` returns a pointer to an array of floats, and that you know its length.
+//     // You'll need to provide the length of the array or have some way of determining it.
+//     // For the sake of this example, let's assume the length is known and is `embeddings_length`.
+// 
+//     int embeddings_length = /* length of the embeddings array */;
+//     Napi::Array embeddingsArray = Napi::Array::New(env, embeddings_length);
+// 
+//     for (int i = 0; i < embeddings_length; i++) {
+//         embeddingsArray[i] = Napi::Number::New(env, embeddings[i]);
+//     }
+// 
+//     return embeddingsArray;
+// }
+
+Napi::Value LlamaContext::TokenToStr(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+
+    if (info.Length() < 1 || !info[0].IsNumber()) {
+        Napi::TypeError::New(env, "Expected arguments: number").ThrowAsJavaScriptException();
+    }
+
+    llama_token token = info[0].As<Napi::Number>().Uint32Value();
+    const char* str = llama_token_to_str(_llamaCtx, token);
+    return Napi::String::New(env, str);
 }

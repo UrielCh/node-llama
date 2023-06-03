@@ -26,6 +26,9 @@ public:
     Napi::Value NVocab(const Napi::CallbackInfo& info);
     Napi::Value NCtx(const Napi::CallbackInfo& info);
     Napi::Value NEmbd(const Napi::CallbackInfo& info);
+    // Napi::Value GetLogits(const Napi::CallbackInfo& info);
+    // Napi::Value GetEmbeddings(const Napi::CallbackInfo& info);
+    Napi::Value TokenToStr(const Napi::CallbackInfo& info);
 
 private:
     static Napi::FunctionReference constructor;
